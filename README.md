@@ -1,1 +1,0 @@
-# stormra-covid-tracker
