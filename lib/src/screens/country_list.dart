@@ -6,8 +6,9 @@ import 'package:covidtracker/src/styles/info_map_window.dart';
 import 'package:covidtracker/src/styles/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:location/location.dart';
 import '../blocs/country_bloc.dart';
-import 'package:flutter/services.dart' show rootBundle;
+import 'package:flutter/services.dart' show PlatformException, rootBundle;
 import 'dart:ui' as ui;
 
 class CountryList extends StatefulWidget {
@@ -24,6 +25,30 @@ class CountryListState extends State<CountryList> {
   GoogleMapController mapController;
   BitmapDescriptor mapIcon;
   Attributes selectedAttributes;
+  final Location location = Location();
+  bool loading = false;
+
+  LocationData locationData;
+  String error;
+
+  Future<void> _getLocation() async {
+    setState(() {
+      error = null;
+      loading = true;
+    });
+    try {
+      final LocationData _locationResult = await location.getLocation();
+      setState(() {
+        locationData = _locationResult;
+        loading = false;
+      });
+    } on PlatformException catch (err) {
+      setState(() {
+        error = err.code;
+        loading = false;
+      });
+    }
+  }
 
   Future<Uint8List> getBytesFromAsset(String path, int width) async {
     ByteData data = await rootBundle.load(path);
@@ -65,15 +90,6 @@ class CountryListState extends State<CountryList> {
           markerId: MarkerId(title),
           position: LatLng(element.attributes.lat ?? 26.762258,
               element.attributes.long ?? 31.499145),
-          // infoWindow: InfoWindow(
-          //   onTap: () {
-          //     print("object");
-          //   },
-          //   title:
-          //       "${element.attributes.provinceState != null ? element.attributes.provinceState : 'N/A'}-${element.attributes.countryRegion}",
-          //   snippet:
-          //       "C: ${element.attributes.confirmed} D: ${element.attributes.deaths} R: ${element.attributes.recovered}",
-          // ),
         );
         _markers[title] = marker;
       });
@@ -82,6 +98,7 @@ class CountryListState extends State<CountryList> {
 
   @override
   void initState() {
+    _getLocation();
     setCustomMapPin();
     selectedAttributes = Attributes();
     rootBundle.loadString('assets/map_style.txt').then((string) {
@@ -116,19 +133,27 @@ class CountryListState extends State<CountryList> {
             coronaCaseCountry = snapshot.data;
             return Stack(
               children: [
-                GoogleMap(
+                locationData != null ? GoogleMap(
                   onMapCreated: onMapCreated,
+                  //// my location :)
                   initialCameraPosition: CameraPosition(
-                    target: const LatLng(26.762258, 31.499145),
+                    target: LatLng(locationData.latitude ?? 26.762258,
+                        locationData.longitude ?? 31.499145),
                     zoom: -50,
                   ),
                   markers: _markers.values.toSet(),
-                ),
+                ) : Container(
+                  child: MessageNoData(message: "Some Error Occure",),
+                ) ,
                 InfoMapWindow(
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => CountryDetails()),
+                      MaterialPageRoute(
+                        builder: (context) => CountryDetails(
+                          selectedAttributes: selectedAttributes,
+                        ),
+                      ),
                     );
                   },
                   pinPillPosition: 0,

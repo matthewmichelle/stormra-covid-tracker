@@ -4,6 +4,7 @@ import 'package:covidtracker/src/styles/styles_values.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_icons/flutter_icons.dart' as flutt;
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 class ChangeTextStyleMainMajor extends StatelessWidget {
   final String title;
@@ -12,6 +13,7 @@ class ChangeTextStyleMainMajor extends StatelessWidget {
   final TextAlign textAlign;
   final TextDecoration textDecoration;
   final int maxLine;
+
   ChangeTextStyleMainMajor(
       {this.title,
       this.color,
@@ -25,6 +27,7 @@ class ChangeTextStyleMainMajor extends StatelessWidget {
     return AutoSizeText(title,
         textAlign: textAlign,
         style: TextStyle(
+          
           fontFamily: 'Montserrat',
           color: color,
           fontSize: mainMajorTextSize,
