@@ -5,7 +5,7 @@ import 'package:covidtracker/src/models/corona_case_country.dart';
 import 'package:covidtracker/src/resources/exceptions.dart';
 import 'package:http/http.dart' show Client, Response;
 
-class MovieApiProvider {
+class CovidApiProvider {
   Client client = Client();
   Future<CoronaCaseCountry> fetchCountryList() async {
     try {

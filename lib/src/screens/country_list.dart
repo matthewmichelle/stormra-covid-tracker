@@ -30,7 +30,9 @@ class CountryListState extends State<CountryList> {
 
   LocationData locationData;
   String error;
+ 
 
+ ////// get location function easy way and shot function
   Future<void> _getLocation() async {
     setState(() {
       error = null;
@@ -49,7 +51,7 @@ class CountryListState extends State<CountryList> {
       });
     }
   }
-
+  ///////// set red icon in map
   Future<Uint8List> getBytesFromAsset(String path, int width) async {
     ByteData data = await rootBundle.load(path);
     ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
@@ -59,13 +61,14 @@ class CountryListState extends State<CountryList> {
         .buffer
         .asUint8List();
   }
-
+   ///////// set custom red icon in map
   setCustomMapPin() async {
     final Uint8List markerIcon =
         await getBytesFromAsset('assets/record.png', 30);
     mapIcon = BitmapDescriptor.fromBytes(markerIcon);
   }
 
+  ///initlization map with covid map point
   void onMapCreated(GoogleMapController controller) {
     mapController = controller;
     mapController.setMapStyle(mapStyle);
@@ -101,6 +104,7 @@ class CountryListState extends State<CountryList> {
     _getLocation();
     setCustomMapPin();
     selectedAttributes = Attributes();
+    /// change map styles to gray style
     rootBundle.loadString('assets/map_style.txt').then((string) {
       mapStyle = string;
     });
@@ -145,6 +149,7 @@ class CountryListState extends State<CountryList> {
                 ) : Container(
                   child: MessageNoData(message: "Some Error Occure",),
                 ) ,
+                //// pop for show country brief
                 InfoMapWindow(
                   onTap: () {
                     Navigator.push(

@@ -7,7 +7,7 @@ class CountryBloc {
   final _moviesFetcher = PublishSubject<CoronaCaseCountry>();
 
   Stream<CoronaCaseCountry> get allConuntry => _moviesFetcher.stream;
-
+  //// fetching dat from bloC 
   fetchAllMovies() async {
     CoronaCaseCountry itemModel = await _repository.fetchAllConuntry();
     print("itemModel${itemModel}");
